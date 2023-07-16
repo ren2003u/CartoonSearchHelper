@@ -7,6 +7,6 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         CartoonDataScraper scraper = new CartoonDataScraper();
-        scraper.scrapeCartoon();
+        //scraper.scrapeCartoon();
     }
 }
