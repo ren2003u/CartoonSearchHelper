@@ -7,6 +7,10 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         CartoonDataScraper scraper = new CartoonDataScraper();
-        //scraper.scrapeCartoon();
+        String[] cartoonIds = new String[11];
+        for (int i = 0; i < 11; i++) {
+            cartoonIds[i] = String.valueOf(93172 + i);
+        }
+        scraper.scrapeCartoons(cartoonIds);
     }
 }
