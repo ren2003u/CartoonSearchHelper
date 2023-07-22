@@ -19,12 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CartoonDataScraper {
-    private WebDriver driver;
-
-    public CartoonDataScraper() {
-        System.setProperty("webdriver.chrome.driver", "D:\\chromedriver_win32\\chromedriver.exe");
-        this.driver = new ChromeDriver();
-    }
 
     public void scrapeCartoons(String[] cartoonIds) {
         // Connect to MongoDB
@@ -35,11 +29,12 @@ public class CartoonDataScraper {
         for (String cartoonId : cartoonIds) {
             scrapeCartoon(cartoonId, collection);
         }
-
-        driver.quit();
     }
 
     private void scrapeCartoon(String cartoonId, MongoCollection<Document> collection) {
+        System.setProperty("webdriver.chrome.driver", "D:\\chromedriver_win32\\chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+
         driver.get("https://hanime1.me/comic/" + cartoonId);
 
         WebElement cartoon = driver.findElement(By.className("col-md-8"));
@@ -66,6 +61,8 @@ public class CartoonDataScraper {
         }
 
         collection.insertOne(cartoonDoc);
+
+        driver.quit();
     }
 
     private String getAttributeOrDefault(WebElement parent, String cssSelector, String defaultValue) {
