@@ -15,10 +15,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CartoonDataScraper {
@@ -52,21 +49,21 @@ public class CartoonDataScraper {
 
         List<WebElement> h5Elements = cartoon.findElements(By.cssSelector("div.comics-metadata-margin-top h5"));
 
-        List<String> tags = h5Elements.size() > 0 ? getElementsText(h5Elements.get(0), "a div.no-select") : new ArrayList<>();
-        List<String> authors = h5Elements.size() > 1 ? getElementsText(h5Elements.get(1), "a div.no-select") : new ArrayList<>();
-        List<String> languages = h5Elements.size() > 2 ? getElementsText(h5Elements.get(2), "a div.no-select") : new ArrayList<>();
-        List<String> categories = h5Elements.size() > 3 ? getElementsText(h5Elements.get(3), "a div.no-select") : new ArrayList<>();
-        String pageCount = h5Elements.size() > 4 ? h5Elements.get(4).getText().replace("頁數：", "").trim() : "No page count";
+        Map<String, List<String>> attributes = new HashMap<>();
+        for (WebElement h5Element : h5Elements) {
+            String attributeKey = h5Element.getText().split("：")[0];
+            List<String> attributeValues = getElementsText(h5Element, "a div.no-select");
+            attributes.put(attributeKey, attributeValues);
+        }
 
         Document cartoonDoc = new Document();
         cartoonDoc.append("cartoonId", cartoonId)
                 .append("transliterationTitle", transliterationTitle)
-                .append("japaneseTitle", japaneseTitle)
-                .append("tags", tags)
-                .append("author", authors)
-                .append("languages", languages)
-                .append("categories", categories)
-                .append("pageCount", pageCount);
+                .append("japaneseTitle", japaneseTitle);
+
+        for (Map.Entry<String, List<String>> entry : attributes.entrySet()) {
+            cartoonDoc.append(entry.getKey(), entry.getValue());
+        }
 
         collection.insertOne(cartoonDoc);
     }
