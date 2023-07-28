@@ -9,7 +9,7 @@ public class Main {
         CartoonDataScraper scraper = new CartoonDataScraper();
         String[] cartoonIds = new String[5];
         for (int i = 0; i < 5; i++) {
-            cartoonIds[i] = String.valueOf(59320 + i);
+            cartoonIds[i] = String.valueOf(59321 + i);
         }
         scraper.scrapeCartoons(cartoonIds);
     }
