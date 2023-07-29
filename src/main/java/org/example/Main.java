@@ -1,16 +1,15 @@
 package org.example;
 
 import org.example.DataScraper.CartoonDataScraper;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
 
+@SpringBootApplication
 public class Main {
+
     public static void main(String[] args) {
-//        CartoonDataScraper scraper = new CartoonDataScraper();
-//        String[] cartoonIds = new String[5];
-//        for (int i = 0; i < 5; i++) {
-//            cartoonIds[i] = String.valueOf(59321 + i);
-//        }
-//        scraper.scrapeCartoons(cartoonIds);
+        SpringApplication.run(Main.class, args);
     }
 }
