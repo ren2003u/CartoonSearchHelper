@@ -19,7 +19,9 @@ public class CartoonSearchService {
 
     public List<Cartoon> searchCartoons(String name) {
         // Construct your query here
-        QueryBuilder query = QueryBuilders.matchPhrasePrefixQuery("transliterationTitle", name);
+        QueryBuilder query = QueryBuilders.boolQuery()
+                .should(QueryBuilders.matchPhrasePrefixQuery("transliterationTitle", name))
+                .should(QueryBuilders.matchPhrasePrefixQuery("japaneseTitle", name));
 
         return cartoonSearchRepository.search(query);
     }

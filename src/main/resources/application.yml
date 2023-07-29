@@ -1,0 +1,6 @@
+spring:
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200  # replace with your Elasticsearch instance URI
+      username: elastic  # replace with your Elasticsearch username
+      password: tz++ze-4DhDveK4vzXRO  # replace with your Elasticsearch password

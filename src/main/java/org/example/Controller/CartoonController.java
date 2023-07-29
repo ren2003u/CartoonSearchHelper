@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cartoons")
+@RequestMapping("/cartoons")
 public class CartoonController {
 
     private final CartoonSearchService cartoonSearchService;
