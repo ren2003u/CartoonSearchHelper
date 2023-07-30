@@ -1,6 +1,7 @@
 package org.example.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -44,9 +45,11 @@ public class CartoonSearchRepository {
         // Parse the response and convert it to a list of Cartoon objects
         SearchHit[] searchHits = response.getHits().getHits();
         List<Cartoon> cartoons = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown properties
         for (SearchHit hit : searchHits) {
             String sourceAsString = hit.getSourceAsString();
-            Cartoon cartoon = new ObjectMapper().readValue(sourceAsString, Cartoon.class);
+            Cartoon cartoon = objectMapper.readValue(sourceAsString, Cartoon.class);
             cartoons.add(cartoon);
         }
         return cartoons;

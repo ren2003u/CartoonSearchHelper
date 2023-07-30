@@ -20,9 +20,8 @@ public class CartoonSearchService {
     public List<Cartoon> searchCartoons(String name) {
         // Construct your query here
         QueryBuilder query = QueryBuilders.boolQuery()
-                .should(QueryBuilders.matchPhrasePrefixQuery("transliterationTitle", name))
-                .should(QueryBuilders.matchPhrasePrefixQuery("japaneseTitle", name));
-
+                .should(QueryBuilders.queryStringQuery("*" + name + "*").field("transliterationTitle").analyzeWildcard(true))
+                .should(QueryBuilders.queryStringQuery("*" + name + "*").field("japaneseTitle").analyzeWildcard(true));
         return cartoonSearchRepository.search(query);
     }
 }
