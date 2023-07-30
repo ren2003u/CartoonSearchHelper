@@ -16,8 +16,8 @@ public class CartoonController {
         this.cartoonSearchService = cartoonSearchService;
     }
 
-    @GetMapping("/search/{name}")
-    public List<Cartoon> search(@PathVariable String name) {
+    @GetMapping("/fuzzySearch/{name}")
+    public List<Cartoon> fuzzySearch(@PathVariable String name) {
         return cartoonSearchService.searchCartoons(name);
     }
 }
