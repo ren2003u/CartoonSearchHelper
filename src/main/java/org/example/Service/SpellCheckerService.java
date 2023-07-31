@@ -7,6 +7,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 @Service
 public class SpellCheckerService {
@@ -17,7 +18,7 @@ public class SpellCheckerService {
         RAMDirectory directory = new RAMDirectory();
         spellChecker = new SpellChecker(directory);
         // Add words to the dictionary (can be loaded from a file or other sources)
-        spellChecker.indexDictionary(new PlainTextDictionary("/aaa/132131"), new IndexWriterConfig(), true);
+        spellChecker.indexDictionary(new PlainTextDictionary(Paths.get("D:\\java\\CartoonSearchHelper\\words.txt")), new IndexWriterConfig(), true);
     }
 
     public String correctSpelling(String word) throws IOException {

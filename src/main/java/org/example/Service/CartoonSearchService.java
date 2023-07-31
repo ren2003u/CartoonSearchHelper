@@ -24,8 +24,8 @@ public class CartoonSearchService {
         String correctedName = spellCheckerService.correctSpelling(name);
         // Construct your query here
         QueryBuilder query = QueryBuilders.boolQuery()
-                .should(QueryBuilders.queryStringQuery("*" + name + "*").field("transliterationTitle").analyzeWildcard(true))
-                .should(QueryBuilders.queryStringQuery("*" + name + "*").field("japaneseTitle").analyzeWildcard(true));
+                .should(QueryBuilders.queryStringQuery("*" + correctedName + "*").field("transliterationTitle").analyzeWildcard(true))
+                .should(QueryBuilders.queryStringQuery("*" + correctedName + "*").field("japaneseTitle").analyzeWildcard(true));
         return cartoonSearchRepository.search(query);
     }
 }
