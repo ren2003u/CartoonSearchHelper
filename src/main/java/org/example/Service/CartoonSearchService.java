@@ -1,5 +1,6 @@
 package org.example.Service;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.example.Repository.CartoonSearchRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CartoonSearchService {
@@ -20,7 +22,32 @@ public class CartoonSearchService {
         this.cartoonSearchRepository = cartoonSearchRepository;
         this.spellCheckerService = spellCheckerService;
     }
+    public List<Cartoon> searchByAttributes(Map<String, List<String>> includeAttributes, Map<String, List<String>> excludeAttributes) {
+        QueryBuilder query = createAttributeQuery(includeAttributes, excludeAttributes);
+        return cartoonSearchRepository.search(query);
+    }
 
+    private QueryBuilder createAttributeQuery(Map<String, List<String>> includeAttributes, Map<String, List<String>> excludeAttributes) {
+        BoolQueryBuilder query = QueryBuilders.boolQuery();
+
+        for (Map.Entry<String, List<String>> entry : includeAttributes.entrySet()) {
+            String field = entry.getKey();
+            List<String> values = entry.getValue();
+            for (String value : values) {
+                query.must(QueryBuilders.matchQuery(field, value));
+            }
+        }
+
+        for (Map.Entry<String, List<String>> entry : excludeAttributes.entrySet()) {
+            String field = entry.getKey();
+            List<String> values = entry.getValue();
+            for (String value : values) {
+                query.mustNot(QueryBuilders.matchQuery(field, value));
+            }
+        }
+
+        return query;
+    }
     public SearchResponse searchCartoons(String name) throws IOException {
         QueryBuilder query = createQuery(name);
         List<Cartoon> results = cartoonSearchRepository.search(query);
