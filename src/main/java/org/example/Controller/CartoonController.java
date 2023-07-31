@@ -2,6 +2,7 @@ package org.example.Controller;
 
 import org.example.Service.CartoonSearchService;
 import org.example.entity.Cartoon;
+import org.example.entity.SearchResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class CartoonController {
     }
 
     @GetMapping("/fuzzySearch/{name}")
-    public List<Cartoon> fuzzySearch(@PathVariable String name) throws IOException {
+    public SearchResponse fuzzySearch(@PathVariable String name) throws IOException {
         return cartoonSearchService.searchCartoons(name);
     }
 }

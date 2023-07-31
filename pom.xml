@@ -64,6 +64,11 @@
             <artifactId>lucene-suggest</artifactId>
             <version>8.10.1</version> <!-- Check for the latest version -->
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>8.10.1</version>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

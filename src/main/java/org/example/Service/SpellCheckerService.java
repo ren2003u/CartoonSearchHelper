@@ -5,6 +5,7 @@ import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.RAMDirectory;
 import org.springframework.stereotype.Service;
+import org.apache.lucene.search.spell.LevenshteinDistance;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -17,7 +18,8 @@ public class SpellCheckerService {
     public SpellCheckerService() throws IOException {
         RAMDirectory directory = new RAMDirectory();
         spellChecker = new SpellChecker(directory);
-        // Add words to the dictionary (can be loaded from a file or other sources)
+        spellChecker.setAccuracy(0.8f); // Set the accuracy, experiment with different values
+        spellChecker.setStringDistance(new LevenshteinDistance()); // You can also try different string distance implementations
         spellChecker.indexDictionary(new PlainTextDictionary(Paths.get("D:\\java\\CartoonSearchHelper\\words.txt")), new IndexWriterConfig(), true);
     }
 
