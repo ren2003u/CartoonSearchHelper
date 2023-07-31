@@ -10,6 +10,9 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.example.entity.Cartoon;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class CartoonSearchRepository {
@@ -38,6 +42,19 @@ public class CartoonSearchRepository {
             return parseResponse(response);
         } catch (IOException e) {
             throw new RuntimeException("Failed to execute search", e);
+        }
+    }
+    public List<String> getAttributeValues(String attribute) {
+        SearchRequest searchRequest = new SearchRequest("cartoons");
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values").field(attribute);
+        searchRequest.source().aggregation(aggregation);
+
+        try {
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            Terms terms = response.getAggregations().get("distinct_values");
+            return terms.getBuckets().stream().map(Bucket::getKeyAsString).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to get attribute values", e);
         }
     }
 
