@@ -27,6 +27,14 @@ public class CartoonSearchService {
         return cartoonSearchRepository.search(query);
     }
 
+    public List<String> getAttributeValues(String attribute) {
+        return cartoonSearchRepository.getAttributeValues(attribute);
+    }
+
+    public List<String> searchAttributeValues(String attribute, String query) {
+        QueryBuilder queryBuilder = QueryBuilders.wildcardQuery(attribute, "*" + query + "*");
+        return cartoonSearchRepository.searchAttributeValues(queryBuilder);
+    }
     private QueryBuilder createAttributeQuery(Map<String, List<String>> includeAttributes, Map<String, List<String>> excludeAttributes) {
         BoolQueryBuilder query = QueryBuilders.boolQuery();
 

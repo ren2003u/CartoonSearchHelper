@@ -19,6 +19,14 @@ public class CartoonController {
         this.cartoonSearchService = cartoonSearchService;
     }
 
+    @GetMapping("/attributeValues/{attribute}")
+    public List<String> getAttributeValues(@PathVariable String attribute) {
+        return cartoonSearchService.getAttributeValues(attribute);
+    }
+    @GetMapping("/searchAttributeValues/{attribute}/{query}")
+    public List<String> searchAttributeValues(@PathVariable String attribute, @PathVariable String query) {
+        return cartoonSearchService.searchAttributeValues(attribute, query);
+    }
     @PostMapping("/attributeSearch")
     public List<Cartoon> attributeSearch(@RequestBody AttributeSearchRequest request) throws IOException {
         return cartoonSearchService.searchByAttributes(request.getIncludeAttributes(), request.getExcludeAttributes());
