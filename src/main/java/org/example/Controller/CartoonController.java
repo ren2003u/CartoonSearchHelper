@@ -19,12 +19,12 @@ public class CartoonController {
         this.cartoonSearchService = cartoonSearchService;
     }
 
-    @GetMapping("/attributeValues/{attribute}")
-    public List<String> getAttributeValues(@PathVariable String attribute) {
+    @GetMapping("/listAttributeAllValues/{attribute}")
+    public List<String> listAttributeAllValues(@PathVariable String attribute) {
         return cartoonSearchService.getAttributeValues(attribute);
     }
-    @GetMapping("/searchAttributeValues/{attribute}/{query}")
-    public List<String> searchAttributeValues(@PathVariable String attribute, @PathVariable String query) {
+    @GetMapping("/fuzzySearchAttributeValues/{attribute}/{query}")
+    public List<String> fuzzySearchAttributeValues(@PathVariable String attribute, @PathVariable String query) {
         return cartoonSearchService.searchAttributeValues(attribute, query);
     }
     @PostMapping("/attributeSearch")
