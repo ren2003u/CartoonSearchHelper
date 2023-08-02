@@ -26,6 +26,7 @@ public class CartoonController {
     @GetMapping("/fuzzySearchAttributeValues/{attribute}/{query}")
     public List<String> fuzzySearchAttributeValues(@PathVariable String attribute, @PathVariable String query) {
         return cartoonSearchService.searchAttributeValues(attribute, query);
+
     }
     @PostMapping("/attributeSearch")
     public List<Cartoon> attributeSearch(@RequestBody AttributeSearchRequest request) throws IOException {
