@@ -44,8 +44,9 @@ public class CartoonSearchRepository {
         }
     }
     public List<String> getAttributeValues(String attribute) {
+        String attributeKeyword = attribute + ".keyword"; // Use the keyword field
         SearchRequest searchRequest = new SearchRequest("cartoons");
-        TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values").field(attribute);
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values").field(attributeKeyword);
         searchRequest.source().aggregation(aggregation);
 
         try {
