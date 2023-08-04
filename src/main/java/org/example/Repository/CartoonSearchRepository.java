@@ -45,8 +45,11 @@ public class CartoonSearchRepository {
     }
     public List<String> getAttributeValues(String attribute) {
         String attributeKeyword = attribute + ".keyword"; // Use the keyword field
+        int size = 1000; // Increase this value as needed
         SearchRequest searchRequest = new SearchRequest("cartoons");
-        TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values").field(attributeKeyword);
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values")
+                .field(attributeKeyword)
+                .size(size); // Set the size
         searchRequest.source().aggregation(aggregation);
 
         try {
@@ -57,7 +60,7 @@ public class CartoonSearchRepository {
             throw new RuntimeException("Failed to get attribute values", e);
         }
     }
-    public List<String> searchAttributeValues(QueryBuilder queryBuilder) {
+    public List<String> searchAttributeValues(String attribute, QueryBuilder queryBuilder) {
         SearchRequest searchRequest = new SearchRequest("cartoons");
         searchRequest.source().query(queryBuilder);
 
@@ -68,19 +71,17 @@ public class CartoonSearchRepository {
             // Use a Set to store distinct values
             Set<String> distinctValues = new HashSet<>();
 
-            // Iterate through the hits and extract the attribute values
+            // Iterate through the hits and extract the values of the specified attribute
             for (SearchHit hit : searchHits) {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-                for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
-                    Object value = entry.getValue();
-                    if (value instanceof List) {
-                        List<?> values = (List<?>) value;
-                        for (Object v : values) {
-                            distinctValues.add(v.toString());
-                        }
-                    } else if (value != null) {
-                        distinctValues.add(value.toString());
+                Object value = sourceAsMap.get(attribute);
+                if (value instanceof List) {
+                    List<?> values = (List<?>) value;
+                    for (Object v : values) {
+                        distinctValues.add(v.toString());
                     }
+                } else if (value != null) {
+                    distinctValues.add(value.toString());
                 }
             }
 

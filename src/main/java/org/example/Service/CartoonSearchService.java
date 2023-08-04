@@ -3,6 +3,7 @@ package org.example.Service;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.example.Repository.CartoonSearchRepository;
 import org.example.entity.Cartoon;
 import org.example.entity.SearchResponse;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CartoonSearchService {
@@ -32,8 +34,13 @@ public class CartoonSearchService {
     }
 
     public List<String> searchAttributeValues(String attribute, String query) {
-        QueryBuilder queryBuilder = QueryBuilders.wildcardQuery(attribute, "*" + query + "*");
-        return cartoonSearchRepository.searchAttributeValues(queryBuilder);
+        // Get all attribute values
+        List<String> allAttributeValues = getAttributeValues(attribute);
+
+        // Filter the attribute values based on the query
+        return allAttributeValues.stream()
+                .filter(value -> value.contains(query))
+                .collect(Collectors.toList());
     }
     private QueryBuilder createAttributeQuery(Map<String, List<String>> includeAttributes, Map<String, List<String>> excludeAttributes) {
         BoolQueryBuilder query = QueryBuilders.boolQuery();
