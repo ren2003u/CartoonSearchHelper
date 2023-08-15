@@ -9,6 +9,4 @@ import java.util.Map;
 public class AttributeSearchRequest {
     private Map<String, List<String>> includeAttributes;
     private Map<String, List<String>> excludeAttributes;
-
-    // Getters and setters
 }
