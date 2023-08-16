@@ -51,10 +51,15 @@ public class CartoonDataScraper {
             attributes.put(attributeKey, attributeValues);
         }
 
+        // Extracting the image URL
+        WebElement imageElement = driver.findElement(By.cssSelector(".col-md-4 a img"));
+        String imageUrl = imageElement.getAttribute("src");
+
         Document cartoonDoc = new Document();
         cartoonDoc.append("cartoonId", cartoonId)
                 .append("transliterationTitle", transliterationTitle)
-                .append("japaneseTitle", japaneseTitle);
+                .append("japaneseTitle", japaneseTitle)
+                .append("imageUrl", imageUrl); // Storing the image URL
 
         for (Map.Entry<String, List<String>> entry : attributes.entrySet()) {
             cartoonDoc.append(entry.getKey(), entry.getValue());
@@ -83,11 +88,5 @@ public class CartoonDataScraper {
 
         return elementsText;
     }
-    //        CartoonDataScraper scraper = new CartoonDataScraper();
-    //        String[] cartoonIds = new String[5];
-    //        for (int i = 0; i < 5; i++) {
-    //            cartoonIds[i] = String.valueOf(59321 + i);
-    //        }
-    //        scraper.scrapeCartoons(cartoonIds);
 }
 
