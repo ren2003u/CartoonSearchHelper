@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+
 public class CartoonDataScraper {
 
     public void scrapeCartoons(String[] cartoonIds) {
@@ -41,6 +43,7 @@ public class CartoonDataScraper {
 
         String transliterationTitle = getAttributeOrDefault(cartoon, "h3.title span.pretty", "No transliteration title");
         String japaneseTitle = getAttributeOrDefault(cartoon, "h4.title span.pretty", "No Japanese title");
+        String imageUrl = driver.findElement(By.cssSelector(".col-md-4 img")).getAttribute("src");
 
         List<WebElement> h5Elements = cartoon.findElements(By.cssSelector("div.comics-metadata-margin-top h5"));
 
@@ -51,15 +54,20 @@ public class CartoonDataScraper {
             attributes.put(attributeKey, attributeValues);
         }
 
-        // Extracting the image URL
-        WebElement imageElement = driver.findElement(By.cssSelector(".col-md-4 a img"));
-        String imageUrl = imageElement.getAttribute("src");
+        // Scrape the page number
+        try {
+            WebElement pageNumberElement = cartoon.findElement(By.xpath(".//h5[contains(text(),'頁數')]/div"));
+            String pageNumber = pageNumberElement.getText();
+            attributes.put("頁數", Collections.singletonList(pageNumber));
+        } catch (NoSuchElementException e) {
+            System.out.println("Page number not found for cartoonId: " + cartoonId);
+        }
 
         Document cartoonDoc = new Document();
         cartoonDoc.append("cartoonId", cartoonId)
                 .append("transliterationTitle", transliterationTitle)
                 .append("japaneseTitle", japaneseTitle)
-                .append("imageUrl", imageUrl); // Storing the image URL
+                .append("imageUrl", imageUrl);
 
         for (Map.Entry<String, List<String>> entry : attributes.entrySet()) {
             cartoonDoc.append(entry.getKey(), entry.getValue());
