@@ -12,8 +12,8 @@ public class CartoonDataScraperTest {
     @Test
     public void testScrapeCartoons() {
             CartoonDataScraper scraper = new CartoonDataScraper();
-            String[] cartoonIds = new String[1];
-            for (int i = 0; i < 1; i++) {
+            String[] cartoonIds = new String[10];
+            for (int i = 0; i < 10; i++) {
                 cartoonIds[i] = String.valueOf(12347 + i);
             }
             scraper.scrapeCartoons(cartoonIds);

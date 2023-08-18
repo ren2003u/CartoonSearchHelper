@@ -10,6 +10,7 @@ import java.util.List;
 public class Cartoon {
     private String transliterationTitle;
     private String japaneseTitle;
+    private String imageUrl;
     @JsonProperty("社團")
     private List<String> community;
     @JsonProperty("作者")
