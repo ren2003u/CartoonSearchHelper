@@ -85,6 +85,7 @@ public class CartoonSearchRepository {
                 }
             }
 
+
             return new ArrayList<>(distinctValues);
         } catch (IOException e) {
             throw new RuntimeException("Failed to find attribute values", e);
