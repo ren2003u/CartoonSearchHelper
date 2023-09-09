@@ -26,22 +26,46 @@ import java.util.stream.Collectors;
 public class CartoonSearchRepository {
 
     // The RestHighLevelClient is the main component to interact with an Elasticsearch cluster.
+    // The RestHighLevelClient is thread-safe, meaning you can use a single instance across multiple threads without any issues.
     private final RestHighLevelClient client;
 
     // Constructor to initialize the RestHighLevelClient.
+    // Spring Boot will automatically provide the configured RestHighLevelClient bean for you
+    // based on the settings in application.yml.
     public CartoonSearchRepository(RestHighLevelClient client) {
         this.client = client;
     }
 
+    // If you ever need to manually configure the RestHighLevelClient (for example, in a non-Spring Boot
+    // application or if you want more control over the client's configuration), you can use the following approach:
+    /*
+    public CartoonSearchRepository() {
+        // Manually configure the RestHighLevelClient:
+        this.client = new RestHighLevelClient(
+            RestClient.builder(
+                new HttpHost("yourElasticsearchHost", yourElasticsearchPort, "http")
+            )
+        );
+    }
+    */
+    // Note: In a real-world scenario, you'd typically choose one approach or the other, not both.
+    // The above manual configuration is commented out because it's just for illustrative purposes.
+
     // This method performs a search on the cartoons index using the provided query.
     public List<Cartoon> search(QueryBuilder query) {
-        // Create a new search request for the cartoons index.
+        // Create a new search request targeting the "cartoons" index in Elasticsearch.
+        // In Elasticsearch, an index is similar to a table in a relational database. It's where the data (documents) are stored.
         SearchRequest searchRequest = new SearchRequest("cartoons");
-        // Set the query for the search request.
+
+        // The `source()` method is used to access the SearchSourceBuilder, which allows for further refinement of the search request.
+        // The `query()` method sets the search criteria using the provided QueryBuilder.
+        // The _source field in Elasticsearch is a special field that contains the original JSON object that was passed during indexing.
+        // When a document is indexed, Elasticsearch stores the original JSON in the _source field and creates an inverted index from it for fast searching.
+        // During a search, by default, the original JSON from the _source field is returned.
         searchRequest.source().query(query);
 
         try {
-            // Execute the search request.
+            // Execute the search request against Elasticsearch.
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
             // Parse the response to extract cartoon data and return the results.
