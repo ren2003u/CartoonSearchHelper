@@ -21,45 +21,60 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// The CartoonSearchRepository is responsible for interacting with ElasticSearch to perform search operations related to cartoons.
 @Repository
 public class CartoonSearchRepository {
 
+    // The RestHighLevelClient is the main component to interact with an Elasticsearch cluster.
     private final RestHighLevelClient client;
 
+    // Constructor to initialize the RestHighLevelClient.
     public CartoonSearchRepository(RestHighLevelClient client) {
         this.client = client;
     }
 
+    // This method performs a search on the cartoons index using the provided query.
     public List<Cartoon> search(QueryBuilder query) {
+        // Create a new search request for the cartoons index.
         SearchRequest searchRequest = new SearchRequest("cartoons");
+        // Set the query for the search request.
         searchRequest.source().query(query);
 
         try {
+            // Execute the search request.
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-            // Parse the response and return the results
+            // Parse the response to extract cartoon data and return the results.
             return parseResponse(response);
         } catch (IOException e) {
             throw new RuntimeException("Failed to execute search", e);
         }
     }
+
+    // This method retrieves distinct values for a given attribute from the cartoons index.
     public List<String> getAttributeValues(String attribute) {
-        String attributeKeyword = attribute + ".keyword"; // Use the keyword field
-        int size = 1000; // Increase this value as needed
+        // Use the keyword field for aggregations.
+        String attributeKeyword = attribute + ".keyword";
+        int size = 1000; // Maximum number of distinct values to retrieve.
         SearchRequest searchRequest = new SearchRequest("cartoons");
+        // Create a terms aggregation to get distinct values.
         TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values")
                 .field(attributeKeyword)
-                .size(size); // Set the size
+                .size(size);
         searchRequest.source().aggregation(aggregation);
 
         try {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            // Extract the distinct values from the aggregation results.
             Terms terms = response.getAggregations().get("distinct_values");
             return terms.getBuckets().stream().map(Bucket::getKeyAsString).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Failed to get attribute values", e);
         }
     }
+
+    // This method searches for distinct values of a given attribute that match a specific query.
+    // Note: This method is not used in the current implementation.
     public List<String> searchAttributeValues(String attribute, QueryBuilder queryBuilder) {
         SearchRequest searchRequest = new SearchRequest("cartoons");
         searchRequest.source().query(queryBuilder);
@@ -68,10 +83,10 @@ public class CartoonSearchRepository {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHit[] searchHits = response.getHits().getHits();
 
-            // Use a Set to store distinct values
+            // Use a Set to ensure distinct values.
             Set<String> distinctValues = new HashSet<>();
 
-            // Iterate through the hits and extract the values of the specified attribute
+            // Extract the values of the specified attribute from the search hits.
             for (SearchHit hit : searchHits) {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                 Object value = sourceAsMap.get(attribute);
@@ -85,19 +100,19 @@ public class CartoonSearchRepository {
                 }
             }
 
-
             return new ArrayList<>(distinctValues);
         } catch (IOException e) {
             throw new RuntimeException("Failed to find attribute values", e);
         }
     }
 
+    // Helper method to parse the search response and convert it to a list of Cartoon objects.
     private List<Cartoon> parseResponse(SearchResponse response) throws JsonProcessingException {
-        // Parse the response and convert it to a list of Cartoon objects
         SearchHit[] searchHits = response.getHits().getHits();
         List<Cartoon> cartoons = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown properties
+        // Configure the ObjectMapper to ignore properties that are not defined in the Cartoon class.
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         for (SearchHit hit : searchHits) {
             String sourceAsString = hit.getSourceAsString();
             Cartoon cartoon = objectMapper.readValue(sourceAsString, Cartoon.class);
