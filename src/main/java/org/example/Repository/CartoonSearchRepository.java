@@ -66,6 +66,11 @@ public class CartoonSearchRepository {
 
         try {
             // Execute the search request against Elasticsearch.
+            // Execute the search request against Elasticsearch using the RestHighLevelClient.
+            // The search method sends the searchRequest to Elasticsearch and retrieves the results.
+            // The results are stored in a SearchResponse object, which contains details of the search hits.
+            // Each hit represents a document that matched the search criteria, and you can retrieve the original JSON data from the _source field for each hit.
+            // RequestOptions.DEFAULT represents the default request configurations. It's used here to specify that default settings should be used for this request.
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
             // Parse the response to extract cartoon data and return the results.
@@ -77,20 +82,44 @@ public class CartoonSearchRepository {
 
     // This method retrieves distinct values for a given attribute from the cartoons index.
     public List<String> getAttributeValues(String attribute) {
-        // Use the keyword field for aggregations.
+        // In Elasticsearch, fields that are used for aggregations (like getting distinct values)
+        // often have a ".keyword" suffix. This ".keyword" version of the field is not tokenized,
+        // meaning it treats the entire field value as a single term. This behavior is crucial for
+        // operations that require the entire field value to be intact, such as exact match searches,
+        // sorting, and aggregations. For instance, if a field has a value "Action Adventure", without
+        // ".keyword", it might be tokenized into two separate terms: "Action" and "Adventure".
+        // However, with ".keyword", it's treated as the single term "Action Adventure", which is
+        // especially useful for string fields that you want to aggregate on, like getting distinct values.
         String attributeKeyword = attribute + ".keyword";
-        int size = 1000; // Maximum number of distinct values to retrieve.
+
+        // This is the maximum number of distinct values you want to retrieve.
+        // Depending on your use case, you might want to adjust this.
+        int size = 1000;
+
+        // Create a new search request for the "cartoons" index.
         SearchRequest searchRequest = new SearchRequest("cartoons");
-        // Create a terms aggregation to get distinct values.
+
+        // Aggregations in Elasticsearch allow you to get insights from your data.
+        // In this case, we're using a "terms" aggregation, which is useful for getting
+        // distinct values (or terms) from a field. The aggregation is named "distinct_values".
         TermsAggregationBuilder aggregation = AggregationBuilders.terms("distinct_values")
                 .field(attributeKeyword)
                 .size(size);
+
+        // Add the aggregation to the search request.
         searchRequest.source().aggregation(aggregation);
 
         try {
+            // Execute the search request.
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-            // Extract the distinct values from the aggregation results.
+
+            // The response contains the results of the aggregation.
+            // In this case, we're interested in the "distinct_values" aggregation.
             Terms terms = response.getAggregations().get("distinct_values");
+
+            // Convert the results of the aggregation into a list of strings.
+            // Each bucket in the terms aggregation represents a distinct value,
+            // and the getKeyAsString method gives us that value.
             return terms.getBuckets().stream().map(Bucket::getKeyAsString).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Failed to get attribute values", e);
